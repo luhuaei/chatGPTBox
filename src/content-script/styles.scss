@@ -70,6 +70,7 @@
 .chatgptbox-container,
 #chatgptbox-container {
   width: 100%;
+  min-width: 720px;
   flex-basis: 0;
   flex-grow: 1;
   margin-bottom: 20px;
