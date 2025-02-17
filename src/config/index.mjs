@@ -292,7 +292,15 @@ export const defaultConfig = {
   themeMode: 'auto',
   /** @type {keyof Models}*/
   modelName: getNavigatorLanguage() === 'zh' ? 'moonshotWebFree' : 'claude2WebFree',
-  apiMode: null,
+  apiMode: {
+    "active": true,
+    "apiKey": "",
+    "customName": "qwen2.5:14b",
+    "customUrl": "http://localhost:8000/v1/chat/completions",
+    "groupName": "ollamaApiModelKeys",
+    "isCustom": false,
+    "itemName": "ollamaModel"
+  },
 
   preferredLanguage: getNavigatorLanguage(),
   clickIconAction: 'popup',
@@ -327,8 +335,8 @@ export const defaultConfig = {
   customModelName: 'gpt-3.5-turbo',
   githubThirdPartyUrl: 'http://127.0.0.1:3000/conversation',
 
-  ollamaEndpoint: 'http://127.0.0.1:11434',
-  ollamaModelName: 'llama3.1',
+  ollamaEndpoint: 'http://192.168.1.242:11434',
+  ollamaModelName: 'qwen2.5:14b',
   ollamaApiKey: '',
   ollamaKeepAliveTime: '5m',
 
@@ -357,18 +365,20 @@ export const defaultConfig = {
   // It allows the content of activeApiModes to change with version updates when the user has not customized ApiModes.
   // If it were directly written into customApiModes, the value would become fixed, even if the user has not made any customizations.
   activeApiModes: [
-    'chatgptFree35',
-    'chatgptFree4o',
-    'chatgptApi35',
-    'chatgptApi4o_128k',
-    'claude2WebFree',
-    'claude35SonnetApi',
-    'bingFree4',
-    'moonshotWebFree',
-    'moonshot_v1_8k',
-    'chatglmTurbo',
-    'customModel',
-    'azureOpenAi',
+    'qwen2.5:1.5b',
+    'qwen2.5:3b',
+    'qwen2.5:7b',
+    'qwen2.5:14b',
+    'qwen2.5:32b',
+    'deepseek-r1:70b',
+    'deepseek-r1:32b',
+    'deepseek-r1:14b',
+    'deepseek-r1:7b',
+    'qwq:latest',
+    'phi4:latest',
+    'mxbai-embed-large:latest',
+    'deepseek-coder-v2:latest',
+    'customModel'
   ],
   customApiModes: [
     {
@@ -380,6 +390,123 @@ export const defaultConfig = {
       apiKey: '',
       active: false,
     },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "qwen2.5:1.5b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "qwen2.5:3b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "qwen2.5:7b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "qwen2.5:14b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "qwen2.5:32b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "deepseek-r1:70b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "deepseek-r1:32b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "deepseek-r1:14b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "deepseek-r1:7b",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "qwq:latest",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "phi4:latest",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "mxbai-embed-large:latest",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    },
+    {
+      "active": true,
+      "apiKey": "",
+      "customName": "deepseek-coder-v2:latest",
+      "customUrl": "http://localhost:8000/v1/chat/completions",
+      "groupName": "ollamaApiModelKeys",
+      "isCustom": false,
+      "itemName": "ollamaModel"
+    }
   ],
   activeSelectionTools: ['translate', 'summary', 'polish', 'code', 'ask'],
   customSelectionTools: [
@@ -459,9 +586,7 @@ export const defaultConfig = {
 }
 
 export function getNavigatorLanguage() {
-  const l = navigator.language.toLowerCase()
-  if (['zh-hk', 'zh-mo', 'zh-tw', 'zh-cht', 'zh-hant'].includes(l)) return 'zhHant'
-  return navigator.language.substring(0, 2)
+  return 'zh'
 }
 
 export function isUsingChatgptWebModel(configOrSession) {
