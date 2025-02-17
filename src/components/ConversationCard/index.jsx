@@ -39,6 +39,163 @@ import { handlePortError } from '../../services/wrappers.mjs'
 
 const logo = Browser.runtime.getURL('logo.png')
 
+function DownloadLink({ session, t }) {
+  const generateDownloadUrl = () => {
+    let output = ''
+    session.conversationRecords.forEach((data) => {
+      output += `${t('Question')}:\n\n${data.question}\n\n${t('Answer')}:\n\n${
+        data.answer
+      }\n\n<hr/>\n\n`
+    })
+    const blob = new Blob([output], { type: 'text/plain;charset=utf-8' })
+    return URL.createObjectURL(blob)
+  }
+
+  return (
+    <a
+      href={generateDownloadUrl()}
+      download="conversation.md"
+      className="gpt-util-icon inline-flex items-center"
+      title={t('Save Conversation')}
+    >
+      下载连接
+    </a>
+  )
+}
+
+function DownloadPdfLink({ session, t }) {
+  // 简单的 markdown 渲染函数
+  const renderMarkdown = (text) => {
+    if (!text) return '';
+
+    // 转义 HTML 特殊字符
+    let rendered = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // 代码块
+    rendered = rendered.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+    // 行内代码
+    rendered = rendered.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // 粗体
+    rendered = rendered.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+    // 斜体
+    rendered = rendered.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+    // 链接
+    rendered = rendered.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+    // 列表
+    rendered = rendered.replace(/^\s*-\s+(.+)$/gm, '<li>$1</li>');
+
+    // 标题
+    rendered = rendered.replace(/^#{1,6}\s+(.+)$/gm, (match, content) => {
+      const level = match.trim().indexOf(' ');
+      return `<h${level}>${content}</h${level}>`;
+    });
+
+    // 段落
+    rendered = rendered.split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+    return rendered;
+  };
+
+  const generatePdf = () => {
+    const printArea = document.createElement('div');
+    printArea.style.display = 'none';
+    document.body.appendChild(printArea);
+
+    let content = '';
+    session.conversationRecords.forEach((data) => {
+      content += `
+        <div style="margin-bottom: 20px;">
+          <h3 style="color: #2563eb; margin-bottom: 10px;">${t('Question')}:</h3>
+          <div style="white-space: pre-wrap; margin-bottom: 15px;">${renderMarkdown(data.question)}</div>
+          <h3 style="color: #2563eb; margin-bottom: 10px;">${t('Answer')}:</h3>
+          <div style="white-space: pre-wrap; margin-bottom: 15px;">${renderMarkdown(data.answer)}</div>
+          <hr style="border: 1px solid #e5e7eb; margin: 20px 0;"/>
+        </div>
+      `;
+    });
+
+    printArea.innerHTML = `
+      <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h1 style="color: #1f2937; margin-bottom: 30px;">Conversation Export</h1>
+        ${content}
+      </div>
+    `;
+
+    const printPdf = () => {
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            @media print {
+              body { padding: 20px; }
+              @page { margin: 1cm; }
+            }
+            code {
+              background-color: #f3f4f6;
+              padding: 2px 4px;
+              border-radius: 4px;
+              font-family: monospace;
+            }
+            pre {
+              background-color: #f3f4f6;
+              padding: 16px;
+              border-radius: 8px;
+              overflow-x: auto;
+            }
+            pre code {
+              background-color: transparent;
+              padding: 0;
+            }
+            p { margin: 8px 0; }
+            a { color: #2563eb; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            ul { padding-left: 20px; }
+            li { margin: 4px 0; }
+          </style>
+        </head>
+        <body>
+          ${printArea.innerHTML}
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+        document.body.removeChild(printArea);
+      }, 250);
+    };
+
+    printPdf();
+  };
+
+  return (
+    <a
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        generatePdf();
+      }}
+      className="gpt-util-icon inline-flex items-center"
+      title={t('Save as PDF')}
+    >
+      下载为pdf
+    </a>
+  );
+}
+
+
 class ConversationItemData extends Object {
   /**
    * @param {'question'|'answer'|'error'} type
@@ -537,6 +694,9 @@ function ConversationCard(props) {
           >
             <DesktopDownloadIcon size={16} />
           </span>
+
+          <DownloadLink session={session} t={t}></DownloadLink>
+          <DownloadPdfLink session={session} t={t}></DownloadPdfLink>
         </span>
       </div>
       <hr />
