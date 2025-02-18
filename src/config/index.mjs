@@ -335,7 +335,7 @@ export const defaultConfig = {
   customModelName: 'gpt-3.5-turbo',
   githubThirdPartyUrl: 'http://127.0.0.1:3000/conversation',
 
-  ollamaEndpoint: 'http://192.168.1.242:11434',
+  ollamaEndpoint: 'http://192.168.1.194:11434',
   ollamaModelName: 'qwen2.5:14b',
   ollamaApiKey: '',
   ollamaKeepAliveTime: '5m',
