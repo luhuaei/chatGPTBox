@@ -306,7 +306,50 @@ async function prepareForRightClickMenu() {
         />,
         container,
       )
+    } else if (message.type === 'CLOSE_CHATS') {
+      document.querySelectorAll('.chatgptbox-toolbar-container').forEach((e) => e.remove())
+    } else if (message.type === 'CHANGE_LANG') {
+      changeLanguage(message.data.lang)
+    } else if (message.type === 'MINDMAP_PAGE') {
+      const userConfig = await getUserConfig()
+      const menuItem = menuConfig[message.data.itemId]
+      console.log("receive MINDMAP_PAGE", message, menuItem)
+      const content = await menuItem.getContent()
+      if (!content) {
+        console.error('Failed to get page content')
+        return
+      }
+
+      console.log("content: ", content)
+      console.log("message data: ", message.data)
+      console.log("user config: ", userConfig)
+
+      await Browser.runtime.sendMessage({
+        type: 'OPEN_URL',
+        data: {
+          url: Browser.runtime.getURL('MindMapPage.html')
+        },
+      })
+
+      await new Promise((r) => setTimeout(r, 2000))
+      await Browser.runtime.sendMessage({
+	type: 'MINDMAP_INIT',
+	data: {
+	  content
+	},
+      })
+
+
+      // // 创建一个新的标签页来显示思维导图，将内容作为base64编码的URL参数传递
+      // let url = Browser.runtime.getURL('MindMapPage.html')
+      // url = url + '?content=' + encodeURIComponent(btoa(content))
+
+      // console.log("Opening URL:", url)
+      // Browser.tabs.create({ url }).catch(error => {
+      //   console.error('Failed to create tab:', error)
+      // })
     }
+    return true // 保持消息通道开放
   })
 }
 

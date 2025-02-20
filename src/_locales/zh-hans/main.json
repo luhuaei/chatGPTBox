@@ -164,5 +164,10 @@
   "ChatGLM (GLM-4-Air, 128k)": "ChatGLM (GLM4Air, 性价比, 128k)",
   "ChatGLM (GLM-4-0520, 128k)": "ChatGLM (GLM4-0520, 最智能, 128k)",
   "ChatGLM (Emohaa)": "ChatGLM (Emohaa, 专业情绪咨询)",
-  "ChatGLM (CharGLM-3)": "ChatGLM (CharGLM-3, 角色扮演)"
+  "ChatGLM (CharGLM-3)": "ChatGLM (CharGLM-3, 角色扮演)",
+  "Generate Mind Map": "生成思维导图",
+  "Mind Map": "思维导图",
+  "Download SVG": "下载 SVG",
+  "Downloading...": "正在下载...",
+  "Waiting for content...": "等待内容..."
 }

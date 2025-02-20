@@ -243,6 +243,65 @@ Browser.runtime.onMessage.addListener(async (message, sender) => {
     case 'GET_COOKIE': {
       return (await Browser.cookies.get({ url: message.data.url, name: message.data.name }))?.value
     }
+    case 'GENERATE_MINDMAP': {
+      const config = await getUserConfig()
+      console.log("message GENERATE_MINDMAP", message, config)
+      const { content, tabId } = message.data
+
+      // 构建提示词
+      const prompt = `Please analyze the following text and create a hierarchical markdown outline that can be used as a mind map. The outline should capture the main ideas and their relationships. Use proper markdown heading levels (# ## ###) to show the hierarchy. The outline should be concise but comprehensive:
+
+${content}
+
+Please format the response as a proper markdown outline with headings.`
+
+      try {
+        // 使用 config 中的 ollama 配置
+        const ollamaUrl = `${config.ollamaEndpoint}/api/generate`
+        const headers = {
+          'Content-Type': 'application/json',
+        }
+
+        // 如果有 API key，添加到请求头
+        if (config.ollamaApiKey) {
+          headers['Authorization'] = `Bearer ${config.apiMode.apiKey}`
+        }
+
+        const response = await fetch(ollamaUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            model: config.apiMode.customName || 'qwen2.5:1.5b',
+            prompt: prompt,
+            stream: false
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`Ollama API error: ${response.status}`)
+        }
+
+        const result = await response.json()
+        const answer = result.response
+
+        // 发送生成的大纲到思维导图页面
+        Browser.tabs.sendMessage(tabId, {
+          type: 'MINDMAP_DATA',
+          data: {
+            markdown: answer,
+          },
+        })
+      } catch (error) {
+        console.error('生成思维导图失败:', error)
+        Browser.tabs.sendMessage(tabId, {
+          type: 'MINDMAP_ERROR',
+          data: {
+            error: error.message,
+          },
+        })
+      }
+      break
+    }
   }
 })
 

@@ -16,6 +16,24 @@ export const config = {
       return `The following is the text content of a web page, analyze the core content and summarize:\n${getCoreContentText()}`
     },
   },
+  mindMap: {
+    label: 'Generate Mind Map',
+    getContent: async () => {
+      return `${getCoreContentText()}`
+    },
+    action: async (fromBackground, tab) => {
+      if (fromBackground) {
+        console.log("Sending MINDMAP_PAGE message from background")
+        // 如果是从后台调用，发送消息给content script处理
+        Browser.tabs.sendMessage(tab.id, {
+          type: 'MINDMAP_PAGE',
+          data: {
+            itemId: "mindMap",
+          },
+        })
+      }
+    },
+  },
   openConversationPage: {
     label: 'Open Conversation Page',
     action: async (fromBackground) => {

@@ -50,6 +50,10 @@ async function runWebpack(isWithoutKatex, isWithoutTiktoken, minimal, callback) 
         import: './src/pages/IndependentPanel/index.jsx',
         dependOn: 'shared',
       },
+      MindMapPage: {
+        import: './src/MindMapPage.js',
+        dependOn: 'shared',
+      },
       shared: shared,
     },
     output: {
@@ -298,6 +302,9 @@ async function finishOutput(outputDirSuffix) {
 
     { src: 'build/IndependentPanel.js', dst: 'IndependentPanel.js' },
     { src: 'src/pages/IndependentPanel/index.html', dst: 'IndependentPanel.html' },
+
+    { src: 'build/MindMapPage.js', dst: 'MindMapPage.js' },
+    { src: 'src/MindMapPage.html', dst: 'MindMapPage.html' },
   ]
 
   // chromium

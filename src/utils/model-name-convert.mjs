@@ -47,6 +47,7 @@ export function modelNameToValue(modelName) {
 }
 
 export function getModelValue(configOrSession) {
+  console.log("get model value", configOrSession)
   let value
   if (configOrSession.apiMode) value = modelNameToValue(apiModeToModelName(configOrSession.apiMode))
   else value = modelNameToValue(configOrSession.modelName)

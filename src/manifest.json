@@ -73,7 +73,10 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "logo.png"
+        "logo.png",
+        "MindMapPage.html",
+        "MindMapPage.js",
+        "MindMapPage.css"
       ],
       "matches": [
         "<all_urls>"
