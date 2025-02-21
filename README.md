@@ -129,6 +129,10 @@ English &nbsp;&nbsp;|&nbsp;&nbsp; [Indonesia](README_IN.md) &nbsp;&nbsp;|&nbsp;&
 
 ![preview_settings](screenshots/preview_settings.jpg)
 
+**MindMap**
+
+![preview_mindmap.png](screenshots/preview_mindmap.jpg)
+
 </div>
 
 ## Credit
