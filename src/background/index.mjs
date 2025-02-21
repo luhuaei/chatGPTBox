@@ -273,7 +273,7 @@ Please format the response as a proper markdown outline with headings.`
           body: JSON.stringify({
             model: config.apiMode.customName || 'qwen2.5:1.5b',
             prompt: prompt,
-            stream: false
+            stream: true // 启用流式返回
           }),
         })
 
@@ -281,16 +281,50 @@ Please format the response as a proper markdown outline with headings.`
           throw new Error(`Ollama API error: ${response.status}`)
         }
 
-        const result = await response.json()
-        const answer = result.response
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let accumulatedMarkdown = ''
 
-        // 发送生成的大纲到思维导图页面
-        Browser.tabs.sendMessage(tabId, {
-          type: 'MINDMAP_DATA',
-          data: {
-            markdown: answer,
-          },
-        })
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) {
+            // 最后一次更新，确保所有内容都显示
+            if (accumulatedMarkdown) {
+              Browser.tabs.sendMessage(tabId, {
+                type: 'MINDMAP_DATA',
+                data: {
+                  markdown: accumulatedMarkdown,
+                  isComplete: true, // 添加完成标志
+                },
+              })
+            }
+            break
+          }
+
+          // 解码本次接收的数据
+          const chunk = decoder.decode(value)
+          try {
+            // Ollama 的流式响应格式是每行一个 JSON
+            const lines = chunk.split('\n').filter(line => line.trim())
+            for (const line of lines) {
+              const data = JSON.parse(line)
+              if (data.response) {
+                accumulatedMarkdown += data.response
+                // 发送累积的 markdown 到思维导图页面
+                Browser.tabs.sendMessage(tabId, {
+                  type: 'MINDMAP_DATA',
+                  data: {
+                    markdown: accumulatedMarkdown,
+                    isComplete: false, // 添加完成标志
+                  },
+                })
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing chunk:', e)
+          }
+        }
+
       } catch (error) {
         console.error('生成思维导图失败:', error)
         Browser.tabs.sendMessage(tabId, {

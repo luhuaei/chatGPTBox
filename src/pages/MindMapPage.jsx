@@ -3,9 +3,14 @@ import MindMap from '../components/MindMap'
 import Browser from 'webextension-polyfill'
 import { useTranslation } from 'react-i18next'
 import { getUserConfig } from '../config'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import 'github-markdown-css/github-markdown-light.css'
 
 function MindMapPage() {
   const [markdown, setMarkdown] = useState('')
+  const [rawMarkdown, setRawMarkdown] = useState('')
+  const [isComplete, setIsComplete] = useState(false)
   const { t } = useTranslation()
   const [downloading, setDownloading] = useState(false)
 
@@ -14,20 +19,24 @@ function MindMapPage() {
     Browser.runtime.onMessage.addListener((message) => {
       if (message.type === 'MINDMAP_INIT') {
         const { content } = message.data
-	console.log("receive content", content)
-	Browser.tabs.getCurrent().then(tab => {
-	  // 发送消息给后台处理
+        Browser.tabs.getCurrent().then(tab => {
+          // 发送消息给后台处理
           Browser.runtime.sendMessage({
             type: 'GENERATE_MINDMAP',
             data: {
               content,
-	      tabId: tab.id,
+              tabId: tab.id,
             },
           })
-	})
+        })
       } else if (message.type === 'MINDMAP_DATA') {
-	console.log("markdown ", message.data.markdown)
-        setMarkdown(message.data.markdown)
+        setRawMarkdown(message.data.markdown)
+
+        // 如果是最后一次更新，设置完成标志
+        if (message.data.isComplete) {
+          setIsComplete(true)
+          setMarkdown(message.data.markdown)
+        }
       }
     })
   }, [])
@@ -94,20 +103,57 @@ function MindMapPage() {
           {downloading ? t('Downloading...') : t('Download SVG')}
         </button>
       </div>
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        {markdown ? (
-          <MindMap markdown={markdown} />
-        ) : (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            color: '#666'
-          }}>
-            {t('Waiting for content...')}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'row',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          width: '50%',
+          padding: '10px',
+          borderRight: '1px solid #ccc',
+          overflowY: 'auto',
+          backgroundColor: '#f4f4f4'
+        }}>
+          <h3>{t('Markdown Content')}</h3>
+          <div
+            className="markdown-body"
+            style={{
+              backgroundColor: 'white',
+              padding: '10px',
+              borderRadius: '4px',
+              height: 'calc(100% - 50px)',
+              overflowY: 'auto'
+            }}
+          >
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+            >
+              {rawMarkdown}
+            </ReactMarkdown>
           </div>
-        )}
+        </div>
+        <div style={{
+          width: '50%',
+          padding: '10px',
+          overflowY: 'auto'
+        }}>
+          <h3>{t('Mind Map')}</h3>
+          {markdown ? (
+            <MindMap markdown={markdown} />
+          ) : (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              color: '#666'
+            }}>
+              {t('Waiting for content...')}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
